@@ -238,7 +238,12 @@ module.exports = async function run() {
   suite.check("a card without an icon stays a plain text display",
     dashChildren.some((c) => c.type === ComponentTypes.TEXT_DISPLAY && c.content === "### 5d\nUptime"));
   suite.check("the heading carries the thumbnail",
-    dashChildren[1].type === ComponentTypes.SECTION && dashChildren[1].accessory.media.url === "https://example.com/icon.png");
+    dashChildren[0].type === ComponentTypes.SECTION && dashChildren[0].accessory.media.url === "https://example.com/icon.png");
+  suite.check("the header, title and description share one component",
+    dashChildren[0].components.length === 3
+    && dashChildren[0].components[0].content === "-# Solicitado por alguien"
+    && dashChildren[0].components[1].content === "## Estado"
+    && dashChildren[0].components[2].content === "Todo bien");
   suite.check("the footer gets a timestamp by default",
     dashChildren[dashChildren.length - 1].content.startsWith("-# Actualizado • <t:"));
   suite.check("the timestamp can be turned off",
@@ -263,6 +268,9 @@ module.exports = async function run() {
       return kids[kids.length - 1] === row;
     })());
   rejects("rejects a card with neither label nor value", () => createDashboard({ cards: [{ icon: "https://x/1.png" }] }));
+  rejects("rejects a dashboard that would overflow the component cap", () => createDashboard({
+    cards: Array.from({ length: 14 }, (_, i) => ({ value: `${i}`, label: `card ${i}`, icon: "https://x/1.png" })),
+  }));
 
   return suite;
 };
