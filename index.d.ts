@@ -1505,6 +1505,18 @@ declare namespace Eris {
     asset: string;
     sku_id: string;
   }
+  interface NameplateData {
+    sku_id: string;
+    asset: string;
+    label: string;
+    palette: string;
+  }
+  interface UserPrimaryGuild {
+    identity_guild_id: string | null;
+    identity_enabled: boolean | null;
+    tag: string | null;
+    badge: string | null;
+  }
   interface MemberOptions {
     channelID?: string | null;
     communicationDisabledUntil?: Date | null;
@@ -3635,9 +3647,13 @@ declare namespace Eris {
     banner?: string | null;
     bannerURL: string | null;
     bot: boolean;
+    collectibles?: { nameplate?: NameplateData | null } | null;
     createdAt: number;
     defaultAvatar: string;
     defaultAvatarURL: string;
+    guildTagBadgeURL: string | null;
+    nameplate?: NameplateData | null;
+    primaryGuild?: UserPrimaryGuild | null;
     discriminator: string;
     globalName: string | null;
     id: string;
