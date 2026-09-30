@@ -6,7 +6,6 @@ const {
   componentsV2,
   container,
   countComponents,
-  createDashboard,
   createListContainer,
   file,
   mediaGallery,
@@ -205,72 +204,6 @@ module.exports = async function run() {
   rejects("rejects an empty action row", () => actionRow([]));
   rejects("rejects an action row with six components", () => actionRow([1, 2, 3, 4, 5, 6].map((n) => button({ label: `b${n}`, customId: `b${n}` }))));
   rejects("rejects a file without a url", () => file(""));
-
-  // --- The dashboard layout ---
-  const dash = createDashboard({
-    header: "-# Solicitado por alguien",
-    title: "Estado",
-    description: "Todo bien",
-    thumbnail: "https://example.com/icon.png",
-    color: 0x5865F2,
-    footer: "Actualizado",
-    cards: [
-      { value: "12", label: "Servidores", icon: "https://example.com/a.png" },
-      { value: "3", label: "Canales", icon: "https://example.com/b.png" },
-      { value: "5d", label: "Uptime" },
-    ],
-  });
-
-  suite.check("the dashboard is a single container", dash.components.length === 1
-    && dash.components[0].type === ComponentTypes.CONTAINER);
-  suite.check("the dashboard sets the Components V2 flag",
-    (dash.flags & MessageFlags.IS_COMPONENTS_V2) === MessageFlags.IS_COMPONENTS_V2);
-
-  const dashChildren = dash.components[0].components;
-  const cardSections = dashChildren.filter((c) => c.type === ComponentTypes.SECTION
-    && c.components[0].content.startsWith("### "));
-  suite.check("each card with an icon becomes its own section", cardSections.length === 2, `${cardSections.length}/2`);
-  suite.check("a card renders its value as a heading above its label",
-    cardSections[0].components[0].content === "### 12\nServidores", JSON.stringify(cardSections[0].components[0].content));
-  suite.check("every card keeps its own icon",
-    cardSections[0].accessory.media.url === "https://example.com/a.png"
-    && cardSections[1].accessory.media.url === "https://example.com/b.png");
-  suite.check("a card without an icon stays a plain text display",
-    dashChildren.some((c) => c.type === ComponentTypes.TEXT_DISPLAY && c.content === "### 5d\nUptime"));
-  suite.check("the heading carries the thumbnail",
-    dashChildren[0].type === ComponentTypes.SECTION && dashChildren[0].accessory.media.url === "https://example.com/icon.png");
-  suite.check("the header, title and description share one component",
-    dashChildren[0].components.length === 3
-    && dashChildren[0].components[0].content === "-# Solicitado por alguien"
-    && dashChildren[0].components[1].content === "## Estado"
-    && dashChildren[0].components[2].content === "Todo bien");
-  suite.check("the footer gets a timestamp by default",
-    dashChildren[dashChildren.length - 1].content.startsWith("-# Actualizado • <t:"));
-  suite.check("the timestamp can be turned off",
-    (() => {
-      const d = createDashboard({ footer: "x", timestamp: false, cards: [{ value: "1", label: "a" }] });
-      return d.components[0].components[d.components[0].components.length - 1].content === "-# x";
-    })());
-  suite.check("a dashboard with two columns splits cards across rows",
-    (() => {
-      const d = createDashboard({ columns: 2, cards: [
-        { value: "1", label: "a", icon: "https://x/1.png" },
-        { value: "2", label: "b", icon: "https://x/2.png" },
-        { value: "3", label: "c", icon: "https://x/3.png" }] });
-      const kids = d.components[0].components;
-      return kids[0].type === ComponentTypes.SECTION && kids[1].type === ComponentTypes.SECTION
-        && kids[2].type === ComponentTypes.SEPARATOR && kids[3].type === ComponentTypes.SECTION;
-    })());
-  suite.check("an action row can be appended to a dashboard",
-    (() => {
-      const d = createDashboard({ cards: [{ value: "1", label: "a" }], components: [row] });
-      const kids = d.components[0].components;
-      return kids[kids.length - 1] === row;
-    })());
-  rejects("rejects a card with neither label nor value", () => createDashboard({ cards: [{ icon: "https://x/1.png" }] }));
-  rejects("rejects a dashboard that would overflow the component cap", () => createDashboard({
-    cards: Array.from({ length: 14 }, (_, i) => ({ value: `${i}`, label: `card ${i}`, icon: "https://x/1.png" })),
-  }));
 
   return suite;
 };

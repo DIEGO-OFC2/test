@@ -24,7 +24,6 @@ export const {
   componentsV2,
   container,
   countComponents,
-  createDashboard,
   createListContainer,
   file,
   mediaGallery,

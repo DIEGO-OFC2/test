@@ -21,7 +21,6 @@ declare namespace Eris {
     componentsV2: typeof componentsV2;
     container: typeof container;
     countComponents: typeof countComponents;
-    createDashboard: typeof createDashboard;
     createListContainer: typeof createListContainer;
     file: typeof file;
     mediaGallery: typeof mediaGallery;
@@ -37,7 +36,6 @@ declare namespace Eris {
   export function componentsV2(components: (ActionRow | ComponentV2)[] | ActionRow | ComponentV2, options?: Omit<AdvancedMessageContent, "content" | "embed" | "embeds" | "components">): ComponentsV2MessageContent;
   export function container(components: (ActionRow | ComponentV2)[], options?: { accentColor?: number; color?: number; spoiler?: boolean }): Container;
   export function countComponents(components: Component | Component[]): number;
-  export function createDashboard(options: DashboardOptions): ComponentsV2MessageContent;
   export function createListContainer(options: ListContainerOptions): ComponentsV2MessageContent;
   export function file(url: UnfurledMediaItem | string, options?: { name?: string; spoiler?: boolean }): FileComponent;
   export function mediaGallery(items: (MediaGalleryItem | string)[]): MediaGallery;
@@ -1636,26 +1634,6 @@ declare namespace Eris {
     header?: string;
     items: ListContainerItem[];
     spoiler?: boolean;
-    title?: string;
-  }
-  interface DashboardCard {
-    accessory?: Button | Thumbnail;
-    icon?: string;
-    label?: string;
-    value?: string;
-  }
-  interface DashboardOptions {
-    cards: DashboardCard[];
-    color?: number;
-    columns?: number;
-    components?: (ActionRow | ComponentV2)[];
-    description?: string;
-    dividers?: boolean;
-    footer?: string;
-    header?: string;
-    spoiler?: boolean;
-    thumbnail?: string;
-    timestamp?: boolean;
     title?: string;
   }
   interface ComponentsV2MessageContent extends Omit<AdvancedMessageContent, "content" | "embed" | "embeds" | "components"> {
