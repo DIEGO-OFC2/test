@@ -39,6 +39,13 @@ const NEWS = [
   },
 ];
 
+const STATS = [
+  { value: "12", label: "Servidores", icon: "https://cdn.discordapp.com/embed/avatars/0.png" },
+  { value: "1.2k", label: "Usuarios", icon: "https://cdn.discordapp.com/embed/avatars/1.png" },
+  { value: "8.4k", label: "Canales", icon: "https://cdn.discordapp.com/embed/avatars/2.png" },
+  { value: "3d 4h", label: "Actividad", icon: "https://cdn.discordapp.com/embed/avatars/3.png" },
+];
+
 bot.on("messageCreate", (msg) => {
   if (msg.content === "!noticias") {
     // One container holding every entry, so the block gets a single accent bar
@@ -52,8 +59,21 @@ bot.on("messageCreate", (msg) => {
       items: NEWS,
       footer: "Actualizado hace un momento",
     }));
+  } else if (msg.content === "!stats") {
+    // A dashboard: a heading, a grid of cards each with its own icon, a divider
+    // between rows and a footer carrying a timestamp
+    bot.createMessage(msg.channel.id, Eris.createDashboard({
+      header: `-# Solicitado por ${msg.author.username}`,
+      title: "ESTADO DEL BOT",
+      description: "**Soketta** está funcionando perfectamente",
+      thumbnail: bot.user.avatarURL,
+      color: 0x5865F2,
+      columns: 2,
+      cards: STATS,
+      footer: "Datos en vivo",
+    }));
   } else if (msg.content === "!manual") {
-    // The same thing assembled by hand, for layouts the helper does not cover
+    // The same thing assembled by hand, for layouts the helpers do not cover
     const { componentsV2, container, section, separator, textDisplay, thumbnail } = Eris;
 
     bot.createMessage(msg.channel.id, componentsV2(container([
@@ -65,13 +85,27 @@ bot.on("messageCreate", (msg) => {
       ),
       separator(),
       // A section's accessory can be a button instead of an image
-      section("**Ver en Crunchyroll**", {
-        type: Eris.Constants.ComponentTypes.BUTTON,
-        style: Eris.Constants.ButtonStyles.LINK,
+      section("**Ver en Crunchyroll**", Eris.button({
         label: "Abrir",
         url: "https://www.crunchyroll.com",
+      })),
+      Eris.actionRow(
+        Eris.button({ label: "Primero", customId: "page:first", style: Eris.Constants.ButtonStyles.SECONDARY }),
+        Eris.button({ label: "Anterior", customId: "page:prev", style: Eris.Constants.ButtonStyles.SECONDARY }),
+        Eris.button({ label: "Siguiente", customId: "page:next" }),
+      ),
+      Eris.selectMenu({
+        customId: "episodio",
+        placeholder: "Elige un episodio",
+        options: [
+          { label: "Episodio 1", value: "1" },
+          { label: "Episodio 2", value: "2" },
+        ],
       }),
-    ], { color: 0xF47FFF })));
+      Eris.file("attachment://resumen.txt", { name: "resumen.txt" }),
+    ], { color: 0xF47FFF }), {
+      files: [{ file: Buffer.from("Mushoku Tensei\nEpisodios: 24"), name: "resumen.txt" }],
+    }));
   }
 });
 

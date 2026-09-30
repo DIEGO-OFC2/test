@@ -16,22 +16,33 @@ declare namespace Eris {
 
   // Components V2 builders
   export const Components: {
+    actionRow: typeof actionRow;
+    button: typeof button;
     componentsV2: typeof componentsV2;
     container: typeof container;
     countComponents: typeof countComponents;
+    createDashboard: typeof createDashboard;
     createListContainer: typeof createListContainer;
+    file: typeof file;
     mediaGallery: typeof mediaGallery;
     section: typeof section;
+    selectMenu: typeof selectMenu;
     separator: typeof separator;
     textDisplay: typeof textDisplay;
     thumbnail: typeof thumbnail;
   };
+  export function actionRow(...components: (Button | SelectMenu)[]): ActionRow;
+  export function actionRow(components: (Button | SelectMenu)[]): ActionRow;
+  export function button(options: ButtonOptions): Button;
   export function componentsV2(components: (ActionRow | ComponentV2)[] | ActionRow | ComponentV2, options?: Omit<AdvancedMessageContent, "content" | "embed" | "embeds" | "components">): ComponentsV2MessageContent;
   export function container(components: (ActionRow | ComponentV2)[], options?: { accentColor?: number; color?: number; spoiler?: boolean }): Container;
   export function countComponents(components: Component | Component[]): number;
+  export function createDashboard(options: DashboardOptions): ComponentsV2MessageContent;
   export function createListContainer(options: ListContainerOptions): ComponentsV2MessageContent;
+  export function file(url: UnfurledMediaItem | string, options?: { name?: string; spoiler?: boolean }): FileComponent;
   export function mediaGallery(items: (MediaGalleryItem | string)[]): MediaGallery;
   export function section(content: string | (string | TextDisplay)[], accessory?: Button | Thumbnail): Section;
+  export function selectMenu(options: SelectMenuOptions): SelectMenu;
   export function separator(options?: { divider?: boolean; spacing?: SeparatorSpacingSize }): Separator;
   export function textDisplay(content: string): TextDisplay;
   export function thumbnail(media: UnfurledMediaItem | string, options?: { description?: string; spoiler?: boolean }): Thumbnail;
@@ -1597,6 +1608,7 @@ declare namespace Eris {
   }
   interface FileComponent {
     file: UnfurledMediaItem;
+    name?: string;
     spoiler?: boolean;
     type: Constants["ComponentTypes"]["FILE"];
   }
@@ -1624,6 +1636,26 @@ declare namespace Eris {
     header?: string;
     items: ListContainerItem[];
     spoiler?: boolean;
+    title?: string;
+  }
+  interface DashboardCard {
+    accessory?: Button | Thumbnail;
+    icon?: string;
+    label?: string;
+    value?: string;
+  }
+  interface DashboardOptions {
+    cards: DashboardCard[];
+    color?: number;
+    columns?: number;
+    components?: (ActionRow | ComponentV2)[];
+    description?: string;
+    dividers?: boolean;
+    footer?: string;
+    header?: string;
+    spoiler?: boolean;
+    thumbnail?: string;
+    timestamp?: boolean;
     title?: string;
   }
   interface ComponentsV2MessageContent extends Omit<AdvancedMessageContent, "content" | "embed" | "embeds" | "components"> {
@@ -1680,6 +1712,14 @@ declare namespace Eris {
     emoji?: Partial<PartialEmoji>;
     label?: string;
     type: Constants["ComponentTypes"]["BUTTON"];
+  }
+  interface ButtonOptions {
+    customId?: string;
+    disabled?: boolean;
+    emoji?: Partial<PartialEmoji>;
+    label: string;
+    style?: ButtonStyles;
+    url?: string;
   }
   interface CreateStickerOptions extends Required<Pick<EditStickerOptions, "name" | "tags">> {
     file: FileContent;
@@ -1816,6 +1856,16 @@ declare namespace Eris {
     min_values?: number;
     placeholder?: string;
     type: SelectMenuTypes;
+  }
+  interface SelectMenuOptions {
+    customId: string;
+    defaultValues?: SelectDefaultValues[];
+    disabled?: boolean;
+    maxValues?: number;
+    minValues?: number;
+    options?: StringSelectOptions[];
+    placeholder?: string;
+    type?: SelectMenuTypes;
   }
   interface ChannelSelectMenu extends SelectMenuBase {
     channel_types?: ChannelTypes[];
